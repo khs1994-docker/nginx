@@ -1,0 +1,5 @@
+.DS_Store
+*.gz
+nginx
+nginx-*
+openssl

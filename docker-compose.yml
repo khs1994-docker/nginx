@@ -1,0 +1,12 @@
+version: '3'
+services:
+
+  nginx:
+    build: ./alpine
+    image: khs1994/nginx:1.13.8-tls1.3-stretch
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d:ro
+      - ./app:/app/test:rw
