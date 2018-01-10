@@ -12,9 +12,12 @@ services:
     image: "khs1994/nginx:1.13.8-tls1.3-stretch"
     ports:
       - "80:80"
-      - "443:443"
+      - "443:443"  
     environment:
       - TZ=Asia/Shanghai
+    volumes:
+      - ./app:/app:rw
+      - ./conf.d:/etc/nginx/conf.d:ro
 ```
 
 ## `$ docker run`
@@ -24,6 +27,8 @@ $ docker run -dit \
          -e TZ=Asia/Shanghai \
          -p 80:80 \
          -p 443:443 \
+         -v $PWD/app:/app \
+         -v $PWD/conf.d:/etc/nginx/conf.d \
          khs1994/nginx:1.13.8-tls1.3-stretch
 ```
 

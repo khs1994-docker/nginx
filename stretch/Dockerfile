@@ -29,7 +29,7 @@ RUN apt update \
 
 RUN curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
 
-RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
+RUN git clone -b tls1.3-draft-18 --depth=1 https://github.com/openssl/openssl /srv/openssl
 
 RUN  GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\

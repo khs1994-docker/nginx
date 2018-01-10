@@ -2,7 +2,7 @@ version: '3'
 services:
 
   nginx:
-    build: ./alpine
+    build: ./stretch
     image: khs1994/nginx:1.13.8-tls1.3-stretch
     ports:
       - 443:443
