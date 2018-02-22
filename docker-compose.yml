@@ -2,8 +2,12 @@ version: '3'
 services:
 
   nginx:
-    build: ./stretch
-    image: khs1994/nginx:1.13.8-tls1.3-stretch
+    build:
+      context: ./alpine
+      args:
+        # OPENSSL_BRANCH: master
+        OPENSSL_URL: https://gitee.com/mirrors/openssl.git
+    image: khs1994/nginx:${NGINX_VERSION}-tls1.3-stretch
     ports:
       - 443:443
       - 80:80

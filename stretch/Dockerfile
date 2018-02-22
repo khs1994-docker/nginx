@@ -4,7 +4,11 @@ LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
 COPY sources.list /etc/apt/sources.list
 
-ENV NGINX_VERSION 1.13.8
+ENV NGINX_VERSION 1.13.9
+
+ARG OPENSSL_URL=https://github.com/openssl/openssl
+
+ARG OPENSSL_BRANCH=master
 
 RUN apt update \
   && apt install --no-install-recommends --no-install-suggests -y \
@@ -29,7 +33,11 @@ RUN apt update \
 
 RUN curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
 
-RUN git clone -b tls1.3-draft-18 --depth=1 https://github.com/openssl/openssl /srv/openssl
+RUN git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl
+
+# RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
+
+# RUN git clone -b master --depth=1 https://gitee.com/mirrors/openssl.git /srv/openssl
 
 RUN  GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\

@@ -2,15 +2,24 @@ FROM alpine:3.7
 
 LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
+ARG OPENSSL_BRANCH=master
+
+ARG OPENSSL_URL=https://github.com/openssl/openssl
+
 RUN apk add --no-cache git \
                        gawk
 
-RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
+RUN git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl
 
-ENV NGINX_VERSION 1.13.8
+# RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
+
+# RUN git clone -b master --depth=1 https://gitee.com/mirrors/openssl.git /srv/openssl
+
+ENV NGINX_VERSION 1.13.9
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
+    --with-openssl=/srv/openssl \
     --with-openssl-opt='enable-tls1_3' \
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -158,8 +167,8 @@ COPY --from=0 /usr/sbin/nginx* /usr/sbin/
 COPY --from=0 /tmp/envsubst /usr/local/bin/
 
 RUN apk add --no-cache tzdata \
-  && groupadd -r nginx \
-  && useradd -r -g nginx -s /bin/false -M nginx \
+  && addgroup -S nginx \
+  && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
   && mkdir -p /var/log/nginx \
   && ln -sf /dev/stdout /var/log/nginx/access.log \
   && ln -sf /dev/stderr /var/log/nginx/error.log \
