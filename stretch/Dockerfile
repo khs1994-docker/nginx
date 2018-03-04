@@ -1,7 +1,5 @@
 FROM debian:stretch
 
-LABEL maintainer="khs1994.com nginx With TLSv1.3"
-
 COPY sources.list /etc/apt/sources.list
 
 ENV NGINX_VERSION 1.13.9
@@ -31,7 +29,7 @@ RUN apt update \
            libperl-dev \
            gawk
 
-RUN curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
+RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
 
 RUN git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl
 
@@ -128,6 +126,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
 FROM debian:stretch
+
+LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
 COPY --from=0 /etc/nginx /etc/nginx
 

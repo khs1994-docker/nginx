@@ -1,7 +1,5 @@
 FROM alpine:3.7
 
-LABEL maintainer="khs1994.com nginx With TLSv1.3"
-
 ARG OPENSSL_BRANCH=master
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
@@ -71,6 +69,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		gcc \
 		libc-dev \
 		make \
+    openssl-dev \
 		pcre-dev \
 		zlib-dev \
 		linux-headers \
@@ -97,7 +96,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	done; \
 	test -z "$found" && echo >&2 "error: failed to fetch GPG key $GPG_KEYS" && exit 1; \
 	gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
-	&& rm -r "$GNUPGHOME" nginx.tar.gz.asc \
+	&& rm -rf "$GNUPGHOME" nginx.tar.gz.asc \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& rm nginx.tar.gz
@@ -157,6 +156,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
 FROM alpine:3.7
+
+LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
 COPY --from=0 /etc/nginx /etc/nginx
 
