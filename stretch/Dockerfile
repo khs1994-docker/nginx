@@ -1,14 +1,18 @@
 FROM debian:stretch
 
-COPY sources.list /etc/apt/sources.list
+ENV NGINX_VERSION 1.13.10
 
-ENV NGINX_VERSION 1.13.9
+ARG DEB_URL=deb.debian.org
+
+ARG DEB_SECURITY_URL=security.debian.org
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 
 ARG OPENSSL_BRANCH=master
 
-RUN apt update \
+RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
+&& sed -i "s!security.debian.org!${DEB_SECURITY_URL}!g" /etc/apt/sources.list \
+&& apt update \
   && apt install --no-install-recommends --no-install-suggests -y \
            curl \
            git \

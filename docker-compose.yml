@@ -6,6 +6,7 @@ services:
       context: ./alpine
       args:
         # OPENSSL_BRANCH: master
+        ALPINE_URL: mirrors.ustc.edu.cn # dl-cdn.alpinelinux.org
         OPENSSL_URL: https://gitee.com/mirrors/openssl.git
     image: khs1994/nginx:${NGINX_VERSION}-tls1.3-alpine
     ports:
@@ -21,6 +22,8 @@ services:
       args:
         # OPENSSL_BRANCH: master
         OPENSSL_URL: https://gitee.com/mirrors/openssl.git
+        DEB_URL: mirrors.ustc.edu.cn # deb.debian.org
+        DEB_SECURITY_URL: mirrors.ustc.edu.cn/debian-security/ # security.debian.org
     image: khs1994/nginx:${NGINX_VERSION}-tls1.3-stretch
     ports:
       - 443:443

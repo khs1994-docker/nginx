@@ -1,5 +1,9 @@
 FROM alpine:3.7
 
+ENV NGINX_VERSION 1.13.10
+
+ARG ALPINE_URL=dl-cdn.alpinelinux.org
+
 ARG OPENSSL_BRANCH=master
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
@@ -13,9 +17,8 @@ RUN git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl
 
 # RUN git clone -b master --depth=1 https://gitee.com/mirrors/openssl.git /srv/openssl
 
-ENV NGINX_VERSION 1.13.9
-
-RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
+RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
+    && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
     --with-openssl=/srv/openssl \
     --with-openssl-opt='enable-tls1_3' \
