@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-ENV NGINX_VERSION 1.13.10
+ARG NGINX_VERSION=1.13.11
 
 ARG ALPINE_URL=dl-cdn.alpinelinux.org
 
@@ -8,8 +8,8 @@ ARG OPENSSL_BRANCH=master
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 
-RUN apk add --no-cache git \
-                       gawk
+RUN apk add --no-cache git
+                       # gawk
 
 RUN git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl
 
@@ -106,11 +106,6 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
 
 RUN cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --with-debug \
-  # https://github.com/openssl/openssl/issues/3884
-  && gawk -i inplace \
-  '/pthread/ { sub(/-lpthread /, ""); sub(/-lpthread /, ""); sub(/\\/, "-lpthread \\"); print } ! /pthread/ { print }' \
-  "objs/Makefile" \
-  #
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
@@ -118,11 +113,6 @@ RUN cd /usr/src/nginx-$NGINX_VERSION \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
 	&& mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so \
 	&& ./configure $CONFIG \
-  #
-  && gawk -i inplace \
-  '/pthread/ { sub(/-lpthread /, ""); sub(/-lpthread /, ""); sub(/\\/, "-lpthread \\"); print } ! /pthread/ { print }' \
-  "objs/Makefile" \
-  #
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& make install \
 	&& rm -rf /etc/nginx/html/ \
@@ -133,7 +123,7 @@ RUN cd /usr/src/nginx-$NGINX_VERSION \
 	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_geoip_module-debug.so /usr/lib/nginx/modules/ngx_http_geoip_module-debug.so \
 	&& install -m755 objs/ngx_stream_geoip_module-debug.so /usr/lib/nginx/modules/ngx_stream_geoip_module-debug.so \
-	&& ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
+	&& ln -s /usr/lib/nginx/modules /etc/nginx/modules \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	&& rm -rf /usr/src/nginx-$NGINX_VERSION \

@@ -1,6 +1,6 @@
 FROM debian:stretch
 
-ENV NGINX_VERSION 1.13.10
+ARG NGINX_VERSION=1.13.11
 
 ARG DEB_URL=deb.debian.org
 
@@ -30,8 +30,8 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
            libgeoip1 \
            libgeoip-dev \
            libperl5.24 \
-           libperl-dev \
-           gawk
+           libperl-dev
+           # gawk
 
 RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
 
@@ -94,9 +94,11 @@ RUN  GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
   && cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --with-debug \
   # https://github.com/openssl/openssl/issues/3884
-  && gawk -i inplace \
-  '/pthread/ { sub(/-lpthread /, ""); sub(/-lpthread /, ""); sub(/\\/, "-lpthread \\"); print } ! /pthread/ { print }' \
-  "objs/Makefile" \
+  # fix nginx 1.13.11
+  # https://github.com/nginx/nginx/commit/90ca1071b77b0fbb4373ae052b1242023295513f
+  # && gawk -i inplace \
+  # '/pthread/ { sub(/-lpthread /, ""); sub(/-lpthread /, ""); sub(/\\/, "-lpthread \\"); print } ! /pthread/ { print }' \
+  # "objs/Makefile" \
   #
 	&& make \
 	&& mv objs/nginx objs/nginx-debug \
@@ -106,9 +108,9 @@ RUN  GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so \
 	&& ./configure $CONFIG \
   #
-  && gawk -i inplace \
-  '/pthread/ { sub(/-lpthread /, ""); sub(/-lpthread /, ""); sub(/\\/, "-lpthread \\"); print } ! /pthread/ { print }' \
-  "objs/Makefile" \
+  # && gawk -i inplace \
+  # '/pthread/ { sub(/-lpthread /, ""); sub(/-lpthread /, ""); sub(/\\/, "-lpthread \\"); print } ! /pthread/ { print }' \
+  # "objs/Makefile" \
   #
 	&& make \
 	&& make install \
