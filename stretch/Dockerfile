@@ -131,7 +131,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
-FROM debian:stretch
+FROM debian:stretch-slim
 
 LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
