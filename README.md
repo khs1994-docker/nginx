@@ -13,7 +13,7 @@ version: "3"
 services:
 
   nginx:
-    image: "khs1994/nginx:1.13.10-tls1.3-stretch"
+    image: "khs1994/nginx:1.13.12-tls1.3-stretch"
     ports:
       - "80:80"
       - "443:443"  
@@ -33,7 +33,7 @@ $ docker run -dit \
          -p 443:443 \
          -v $PWD/app:/app \
          -v $PWD/conf.d:/etc/nginx/conf.d \
-         khs1994/nginx:1.13.10-tls1.3-stretch
+         khs1994/nginx:1.13.12-tls1.3-stretch
 ```
 
 # Who use it?

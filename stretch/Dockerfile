@@ -1,17 +1,17 @@
 FROM debian:stretch-slim
 
-ARG NGINX_VERSION=1.13.11
+ARG NGINX_VERSION=1.13.12
 
 ARG DEB_URL=deb.debian.org
 
-ARG DEB_SECURITY_URL=security.debian.org
+ARG DEB_SECURITY_URL=security.debian.org/debian-security
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 
 ARG OPENSSL_BRANCH=master
 
 RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
-&& sed -i "s!security.debian.org!${DEB_SECURITY_URL}!g" /etc/apt/sources.list \
+&& sed -i "s!security.debian.org/debian-security!${DEB_SECURITY_URL}!g" /etc/apt/sources.list \
 && apt update \
   && apt install --no-install-recommends --no-install-suggests -y \
            curl \

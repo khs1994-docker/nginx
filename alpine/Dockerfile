@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-ARG NGINX_VERSION=1.13.11
+ARG NGINX_VERSION=1.13.12
 
 ARG ALPINE_URL=dl-cdn.alpinelinux.org
 
@@ -9,7 +9,6 @@ ARG OPENSSL_BRANCH=master
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 
 RUN apk add --no-cache git
-                       # gawk
 
 RUN git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl
 
