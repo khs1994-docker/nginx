@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-ARG NGINX_VERSION=1.13.12
+ARG NGINX_VERSION=1.15.0
 
 ARG ALPINE_URL=dl-cdn.alpinelinux.org
 
