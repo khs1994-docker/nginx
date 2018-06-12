@@ -14,6 +14,7 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 && sed -i "s!security.debian.org/debian-security!${DEB_SECURITY_URL}!g" /etc/apt/sources.list \
 && apt update \
   && apt install --no-install-recommends --no-install-suggests -y \
+           patch \
            curl \
            git \
            ca-certificates \
