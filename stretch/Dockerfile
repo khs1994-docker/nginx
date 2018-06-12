@@ -94,6 +94,8 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
+  && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
+  && patch -p1 < nginx_hpack_push.patch \
 	&& ./configure $CONFIG --with-debug \
   # https://github.com/openssl/openssl/issues/3884
   # fix nginx 1.13.11
