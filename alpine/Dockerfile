@@ -1,5 +1,7 @@
 FROM alpine:3.7
 
+LABEL maintainer="khs1994.com nginx With TLSv1.3"
+
 ARG NGINX_VERSION=1.15.0
 
 ARG ALPINE_URL=dl-cdn.alpinelinux.org
@@ -11,8 +13,8 @@ ARG OPENSSL_URL=https://github.com/openssl/openssl
 RUN apk add --no-cache git \
      && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
      && cd /srv/openssl \
-     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre7_ciphers.patch \
-     && patch -p1 < openssl-equal-pre7_ciphers.patch \
+     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre8_ciphers.patch \
+     && patch -p1 < openssl-equal-pre8_ciphers.patch \
      && cd / \
 #
 # RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
@@ -141,35 +143,24 @@ RUN apk add --no-cache git \
 			| sort -u \
 			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)" \
-	&& apk add --no-cache --virtual .nginx-rundeps $runDeps \
+  && apk add --no-cache --virtual .nginx-rundeps $runDeps \
 	&& apk del .build-deps \
-	&& apk del .gettext
+	&& apk del .gettext \
+	&& mv /tmp/envsubst /usr/local/bin/ \
+	\
+	# Bring in tzdata so users could set the timezones through the environment
+	# variables
+	&& apk add --no-cache tzdata \
+	\
+	# forward request and error logs to docker log collector
+	&& ln -sf /dev/stdout /var/log/nginx/access.log \
+	&& ln -sf /dev/stderr /var/log/nginx/error.log \
+  && rm -rf /srv/openssl
 
 COPY nginx.conf /etc/nginx/nginx.conf
-
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
-FROM alpine:3.7
-
-LABEL maintainer="khs1994.com nginx With TLSv1.3"
-
-COPY --from=0 /etc/nginx /etc/nginx
-
-COPY --from=0 /usr/lib/nginx /usr/lib/nginx
-
-COPY --from=0 /usr/sbin/nginx* /usr/sbin/
-
-COPY --from=0 /tmp/envsubst /usr/local/bin/
-
-RUN apk add --no-cache tzdata \
-  && addgroup -S nginx \
-  && adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
-  && mkdir -p /var/log/nginx \
-  && ln -sf /dev/stdout /var/log/nginx/access.log \
-  && ln -sf /dev/stderr /var/log/nginx/error.log \
-  && mkdir -p /var/cache/nginx
-
-EXPOSE 80 443
+EXPOSE 80
 
 STOPSIGNAL SIGTERM
 

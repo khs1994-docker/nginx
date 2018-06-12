@@ -13,7 +13,7 @@ version: "3"
 services:
 
   nginx:
-    image: "khs1994/nginx:1.15.0-tls1.3-stretch"
+    image: "khs1994/nginx:1.15.0-alpine"
     ports:
       - "80:80"
       - "443:443"  
@@ -33,7 +33,7 @@ $ docker run -dit \
          -p 443:443 \
          -v $PWD/app:/app \
          -v $PWD/conf.d:/etc/nginx/conf.d \
-         khs1994/nginx:1.15.0-tls1.3-stretch
+         khs1994/nginx:1.15.0-alpine
 ```
 
 # Who use it?
@@ -45,3 +45,7 @@ $ docker run -dit \
 * [khs1994-docker/lnmp](https://github.com/khs1994-docker/lnmp)
 
 * [Official NGINX Dockerfiles](https://github.com/nginxinc/docker-nginx)
+
+* https://github.com/sanqi/nginx-tls1.3
+
+* https://github.com/hakasenyang/openssl-patch

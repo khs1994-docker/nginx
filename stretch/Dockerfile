@@ -34,6 +34,10 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
            # gawk \
     && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
     && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
+    && cd /srv/openssl \
+    && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre8_ciphers.patch \
+    && patch -p1 < openssl-equal-pre8_ciphers.patch \
+    && cd / \
 #
 # RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
 #
