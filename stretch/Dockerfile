@@ -30,18 +30,16 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
            libgeoip1 \
            libgeoip-dev \
            libperl5.24 \
-           libperl-dev
-           # gawk
-
-RUN curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz
-
-RUN git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl
-
+           libperl-dev \
+           # gawk \
+    && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
+    && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
+#
 # RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
-
+#
 # RUN git clone -b master --depth=1 https://gitee.com/mirrors/openssl.git /srv/openssl
-
-RUN  GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
+#
+  && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
     --with-openssl=/srv/openssl \
     --with-openssl-opt='enable-tls1_3' \

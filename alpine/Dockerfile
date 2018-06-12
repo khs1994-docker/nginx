@@ -8,15 +8,18 @@ ARG OPENSSL_BRANCH=master
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 
-RUN apk add --no-cache git
-
-RUN git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl
-
+RUN apk add --no-cache git \
+     && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
+     && cd /srv/openssl \
+     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre7_ciphers.patch \
+     && patch -p1 < openssl-equal-pre7_ciphers.patch \
+     && cd / \
+#
 # RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
-
+#
 # RUN git clone -b master --depth=1 https://gitee.com/mirrors/openssl.git /srv/openssl
-
-RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
+#
+    && sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
     && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
     --with-openssl=/srv/openssl \
@@ -101,9 +104,8 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
 	&& rm -rf "$GNUPGHOME" nginx.tar.gz.asc \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
-	&& rm nginx.tar.gz
-
-RUN cd /usr/src/nginx-$NGINX_VERSION \
+	&& rm nginx.tar.gz \
+  && cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
