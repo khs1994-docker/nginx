@@ -35,7 +35,7 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
     && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
     && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
     && cd /srv/openssl \
-    && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre8_ciphers.patch \
+    && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre8_ciphers.patch \
     && patch -p1 < openssl-equal-pre8_ciphers.patch \
     && cd / \
 #
@@ -94,7 +94,7 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
-  && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
+  && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
   && patch -p1 < nginx_hpack_push.patch \
 	&& ./configure $CONFIG --with-debug \
   # https://github.com/openssl/openssl/issues/3884
