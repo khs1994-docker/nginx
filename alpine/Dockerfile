@@ -2,7 +2,7 @@ FROM alpine:3.7
 
 LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
-ARG NGINX_VERSION=1.15.0
+ARG NGINX_VERSION=1.15.1
 
 ARG ALPINE_URL=dl-cdn.alpinelinux.org
 
@@ -13,14 +13,9 @@ ARG OPENSSL_URL=https://github.com/openssl/openssl
 RUN apk add --no-cache git \
      && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
      && cd /srv/openssl \
-     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre8_ciphers.patch \
-     && patch -p1 < openssl-equal-pre8_ciphers.patch \
+     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre9_ciphers.patch \
+     && patch -p1 < openssl-equal-pre9_ciphers.patch \
      && cd / \
-#
-# RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
-#
-# RUN git clone -b master --depth=1 https://gitee.com/mirrors/openssl.git /srv/openssl
-#
     && sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
     && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
@@ -108,8 +103,8 @@ RUN apk add --no-cache git \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
-  && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
-  && patch -p1 < nginx_hpack_push.patch \
+  # && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
+  # && patch -p1 < nginx_hpack_push.patch \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \

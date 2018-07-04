@@ -1,6 +1,6 @@
 FROM debian:stretch-slim
 
-ARG NGINX_VERSION=1.15.0
+ARG NGINX_VERSION=1.15.1
 
 ARG DEB_URL=deb.debian.org
 
@@ -36,14 +36,9 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
     && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
     && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
     && cd /srv/openssl \
-    && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre8_ciphers.patch \
-    && patch -p1 < openssl-equal-pre8_ciphers.patch \
+    && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre9_ciphers.patch \
+    && patch -p1 < openssl-equal-pre9_ciphers.patch \
     && cd / \
-#
-# RUN git clone -b master --depth=1 https://github.com/openssl/openssl /srv/openssl
-#
-# RUN git clone -b master --depth=1 https://gitee.com/mirrors/openssl.git /srv/openssl
-#
   && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
     --with-openssl=/srv/openssl \
@@ -91,6 +86,7 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 		--with-compat \
 		--with-file-aio \
 		--with-http_v2_module \
+    --with-http_v2_hpack_enc \
 	" \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
@@ -98,13 +94,6 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
   && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
   && patch -p1 < nginx_hpack_push.patch \
 	&& ./configure $CONFIG --with-debug \
-  # https://github.com/openssl/openssl/issues/3884
-  # fix nginx 1.13.11
-  # https://github.com/nginx/nginx/commit/90ca1071b77b0fbb4373ae052b1242023295513f
-  # && gawk -i inplace \
-  # '/pthread/ { sub(/-lpthread /, ""); sub(/-lpthread /, ""); sub(/\\/, "-lpthread \\"); print } ! /pthread/ { print }' \
-  # "objs/Makefile" \
-  #
 	&& make \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
@@ -112,11 +101,6 @@ RUN sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
 	&& mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so \
 	&& ./configure $CONFIG \
-  #
-  # && gawk -i inplace \
-  # '/pthread/ { sub(/-lpthread /, ""); sub(/-lpthread /, ""); sub(/\\/, "-lpthread \\"); print } ! /pthread/ { print }' \
-  # "objs/Makefile" \
-  #
 	&& make \
 	&& make install \
 	&& mkdir /etc/nginx/conf.d/ \
