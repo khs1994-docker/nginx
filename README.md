@@ -13,7 +13,7 @@ version: "3"
 services:
 
   nginx:
-    image: "khs1994/nginx:1.15.1-alpine"
+    image: "khs1994/nginx:1.15.2-alpine"
     ports:
       - "80:80"
       - "443:443"  
@@ -33,7 +33,7 @@ $ docker run -dit \
          -p 443:443 \
          -v $PWD/app:/app \
          -v $PWD/conf.d:/etc/nginx/conf.d \
-         khs1994/nginx:1.15.1-alpine
+         khs1994/nginx:1.15.2-alpine
 ```
 
 # Who use it?
