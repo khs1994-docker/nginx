@@ -10,15 +10,15 @@ ARG OPENSSL_BRANCH=master
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 
-RUN apk add --no-cache git \
+RUN set -x ; apk add --no-cache git \
      && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
      && cd /srv/openssl \
-     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre9_ciphers.patch \
-     && patch -p1 < openssl-equal-pre9_ciphers.patch \
+     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre10_ciphers.patch \
+     && patch -p1 < openssl-equal-pre10_ciphers.patch \
      && cd / \
-    && sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
-    && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
-	&& CONFIG="\
+     && sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
+     && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
+	   && CONFIG="\
     --with-openssl=/srv/openssl \
     --with-openssl-opt='enable-tls1_3' \
 		--prefix=/etc/nginx \
@@ -103,8 +103,8 @@ RUN apk add --no-cache git \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
-  # && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
-  # && patch -p1 < nginx_hpack_push.patch \
+  # && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch \
+  # && patch -p1 < nginx_hpack_push_1.15.3.patch \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
@@ -141,8 +141,8 @@ RUN apk add --no-cache git \
 			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
 	)" \
   && apk add --no-cache --virtual .nginx-rundeps $runDeps \
-	&& apk del .build-deps \
-	&& apk del .gettext \
+	&& apk del --no-cache .build-deps \
+	&& apk del --no-cache .gettext \
 	&& mv /tmp/envsubst /usr/local/bin/ \
 	\
 	# Bring in tzdata so users could set the timezones through the environment
