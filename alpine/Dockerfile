@@ -64,6 +64,7 @@ RUN set -x ; apk add --no-cache git \
 		--with-compat \
 		--with-file-aio \
 		--with-http_v2_module \
+    --with-http_v2_hpack_enc \
 	" \
 	&& addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -84,7 +85,7 @@ RUN set -x ; apk add --no-cache git \
     perl-dev \
     gettext \
 	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
-	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
+	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc -o nginx.tar.gz.asc \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& found=''; \
 	for server in \
@@ -103,9 +104,9 @@ RUN set -x ; apk add --no-cache git \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
-  # && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch \
-  # && patch -p1 < nginx_hpack_push_1.15.3.patch \
-	&& ./configure $CONFIG --with-debug \
+  && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
+  && patch -p1 < nginx_hpack_push.patch \
+	; ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
@@ -143,6 +144,7 @@ RUN set -x ; apk add --no-cache git \
   && apk add --no-cache --virtual .nginx-rundeps $runDeps \
 	&& apk del --no-cache .build-deps \
 	&& apk del --no-cache .gettext \
+  && apk del --no-cache git \
 	&& mv /tmp/envsubst /usr/local/bin/ \
 	\
 	# Bring in tzdata so users could set the timezones through the environment
