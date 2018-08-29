@@ -2,7 +2,7 @@ FROM alpine:3.8
 
 LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
-ARG NGINX_VERSION=1.15.2
+ARG NGINX_VERSION=1.15.3
 
 ARG ALPINE_URL=dl-cdn.alpinelinux.org
 
@@ -104,8 +104,8 @@ RUN set -x ; apk add --no-cache git \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& rm nginx.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
-  && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
-  && patch -p1 < nginx_hpack_push.patch \
+  && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch \
+  && patch -p1 < nginx_hpack_push_1.15.3.patch \
 	; ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \

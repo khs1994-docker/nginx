@@ -1,6 +1,6 @@
 FROM debian:stretch-slim
 
-ARG NGINX_VERSION=1.15.2
+ARG NGINX_VERSION=1.15.3
 
 ARG DEB_URL=deb.debian.org
 
@@ -91,8 +91,8 @@ RUN set -x ; sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
   && cd /usr/src/nginx-$NGINX_VERSION \
-  && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push.patch \
-  && patch -p1 < nginx_hpack_push.patch \
+  && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/nginx_hpack_push_1.15.3.patch \
+  && patch -p1 < nginx_hpack_push_1.15.3.patch \
 	&& ./configure $CONFIG --with-debug \
 	&& make \
 	&& mv objs/nginx objs/nginx-debug \
