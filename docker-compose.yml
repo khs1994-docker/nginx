@@ -33,3 +33,12 @@ services:
     volumes:
       - ./conf.d:/etc/nginx/conf.d:ro
       - ./app:/app/test:rw
+
+  official:
+    image: nginx:1.15.2-alpine
+    ports:
+      - 443:443
+      - 80:80
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d:ro
+      - ./app:/app/test:rw
