@@ -6,6 +6,11 @@
 
 * https://github.com/khs1994-docker/lnmp/issues/137
 
+| Verson     | Details     |
+| :------------- | :------------- |
+| [![](https://images.microbadger.com/badges/version/khs1994/nginx:1.15.3-alpine.svg)](https://microbadger.com/images/khs1994/nginx:1.15.3-alpine "Get your own version badge on microbadger.com") | [![](https://images.microbadger.com/badges/image/khs1994/nginx:1.15.3-alpine.svg)](https://microbadger.com/images/khs1994/nginx:1.15.3-alpine "Get your own image badge on microbadger.com") |
+|[![](https://images.microbadger.com/badges/version/khs1994/nginx:1.15.3-stretch.svg)](https://microbadger.com/images/khs1994/nginx:1.15.3-stretch "Get your own version badge on microbadger.com") | [![](https://images.microbadger.com/badges/image/khs1994/nginx:1.15.3-stretch.svg)](https://microbadger.com/images/khs1994/nginx:1.15.3-stretch "Get your own image badge on microbadger.com") |
+
 ## `Docker Compose`
 
 ```yaml

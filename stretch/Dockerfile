@@ -8,7 +8,7 @@ ARG DEB_SECURITY_URL=security.debian.org/debian-security
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 
-ARG OPENSSL_BRANCH=master
+ARG OPENSSL_BRANCH=OpenSSL_1_1_1
 
 RUN set -x ; sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 && sed -i "s!security.debian.org/debian-security!${DEB_SECURITY_URL}!g" /etc/apt/sources.list \
@@ -36,8 +36,8 @@ RUN set -x ; sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
     && curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
     && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
     && cd /srv/openssl \
-    && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-pre10_ciphers.patch \
-    && patch -p1 < openssl-equal-pre10_ciphers.patch \
+    && curl -fsSLO https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1.patch \
+    && patch -p1 < openssl-equal-1.1.1.patch \
     && cd / \
   && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 	&& CONFIG="\
