@@ -15,7 +15,6 @@ services:
       - 80:80
     volumes:
       - ./conf.d:/etc/nginx/conf.d:ro
-      - ./app:/app/test:rw
 
   stretch:
     build:
@@ -32,7 +31,6 @@ services:
       - 80:80
     volumes:
       - ./conf.d:/etc/nginx/conf.d:ro
-      - ./app:/app/test:rw
 
   official:
     image: nginx:1.15.8-alpine
@@ -41,4 +39,3 @@ services:
       - 80:80
     volumes:
       - ./conf.d:/etc/nginx/conf.d:ro
-      - ./app:/app/test:rw

@@ -6,15 +6,15 @@ ARG NGINX_VERSION=1.15.8
 
 ARG ALPINE_URL=dl-cdn.alpinelinux.org
 
-ARG OPENSSL_BRANCH=OpenSSL_1_1_1
+ARG OPENSSL_BRANCH=OpenSSL_1_1_1a
 
 ARG OPENSSL_URL=https://github.com/openssl/openssl
 
 RUN set -x ; apk add --no-cache git \
      && git clone -b $OPENSSL_BRANCH --depth=1 $OPENSSL_URL /srv/openssl \
      && cd /srv/openssl \
-     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1.patch \
-     && patch -p1 < openssl-equal-1.1.1.patch \
+     && wget https://raw.githubusercontent.com/hakasenyang/openssl-patch/master/openssl-equal-1.1.1a_ciphers.patch \
+     && patch -p1 < openssl-equal-1.1.1a_ciphers.patch \
      && cd / \
      && sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_URL}/g" /etc/apk/repositories \
      && GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
@@ -77,7 +77,7 @@ RUN set -x ; apk add --no-cache git \
 		zlib-dev \
 		linux-headers \
 		curl \
-		gnupg \
+		gnupg1 \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
