@@ -2,7 +2,7 @@ FROM alpine:3.8
 
 LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
-ARG NGINX_VERSION=1.15.7
+ARG NGINX_VERSION=1.15.8
 
 ARG ALPINE_URL=dl-cdn.alpinelinux.org
 
@@ -116,9 +116,9 @@ RUN set -x ; apk add --no-cache git \
 	&& ./configure $CONFIG \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& make install \
-	&& rm -rf /etc/nginx/html/ \
+	&& rm -rf /etc/nginx/html/index.html \
 	&& mkdir /etc/nginx/conf.d/ \
-	&& mkdir -p /usr/share/nginx/html/ \
+	# && mkdir -p /usr/share/nginx/html/ \
 	&& install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
 	&& install -m755 objs/ngx_http_xslt_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_xslt_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
@@ -158,6 +158,7 @@ RUN set -x ; apk add --no-cache git \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+COPY index.html /etc/nginx/html/
 
 EXPOSE 80
 

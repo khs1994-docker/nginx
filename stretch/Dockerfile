@@ -1,6 +1,6 @@
 FROM debian:stretch-slim
 
-ARG NGINX_VERSION=1.15.7
+ARG NGINX_VERSION=1.15.8
 
 ARG DEB_URL=deb.debian.org
 
@@ -104,9 +104,10 @@ RUN set -x ; sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 	&& make \
 	&& make install \
 	&& mkdir /etc/nginx/conf.d/ \
-	&& mkdir -p /usr/share/nginx/html/ \
-	&& install -m644 html/index.html /usr/share/nginx/html/ \
-	&& install -m644 html/50x.html /usr/share/nginx/html/ \
+  && rm -rf /etc/nginx/html/index.html \
+	# && mkdir -p /usr/share/nginx/html/ \
+	# && install -m644 html/index.html /usr/share/nginx/html/ \
+	# && install -m644 html/50x.html /usr/share/nginx/html/ \
 	&& install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
 	&& install -m755 objs/ngx_http_xslt_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_xslt_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
@@ -117,7 +118,6 @@ RUN set -x ; sed -i "s!deb.debian.org!${DEB_URL}!g" /etc/apt/sources.list \
 	&& strip /usr/lib/nginx/modules/*.so
 
 COPY nginx.conf /etc/nginx/nginx.conf
-
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 
 FROM debian:stretch-slim
@@ -125,10 +125,9 @@ FROM debian:stretch-slim
 LABEL maintainer="khs1994.com nginx With TLSv1.3"
 
 COPY --from=0 /etc/nginx /etc/nginx
-
 COPY --from=0 /usr/lib/nginx /usr/lib/nginx
-
 COPY --from=0 /usr/sbin/nginx* /usr/sbin/
+COPY index.html /etc/nginx/html/
 
 RUN groupadd -r nginx \
   && useradd -r -g nginx -s /bin/false -M nginx \
