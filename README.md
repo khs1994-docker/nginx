@@ -1,31 +1,50 @@
-# Nginx With TLS1.3
+# Nginx With HTTP3
 
-[![GitHub stars](https://img.shields.io/github/stars/khs1994-website/nginx-tls1.3.svg?style=social&label=Stars)](https://github.com/khs1994-website/nginx-tls1.3)  [![GitHub release](https://img.shields.io/github/release/khs1994-website/nginx-tls1.3.svg)](https://github.com/khs1994-website/nginx-tls1.3/releases) [![Docker Stars](https://img.shields.io/docker/stars/khs1994/nginx.svg)](https://store.docker.com/community/images/khs1994/nginx/) [![Docker Pulls](https://img.shields.io/docker/pulls/khs1994/nginx.svg)](https://store.docker.com/community/images/khs1994/nginx/)
+[![GitHub stars](https://img.shields.io/github/stars/khs1994-docker/nginx.svg?style=social&label=Stars)](https://github.com/khs1994-docker/nginx)  [![GitHub release](https://img.shields.io/github/release/khs1994-docker/nginx.svg)](https://github.com/khs1994-docker/nginx/releases) [![Docker Stars](https://img.shields.io/docker/stars/khs1994/nginx.svg)](https://hub.docker.com/r/khs1994/nginx/) [![Docker Pulls](https://img.shields.io/docker/pulls/khs1994/nginx.svg)](https://hub.docker.com/r/khs1994/nginx/)
 
-* https://www.khs1994.com/linux/ssl/https/README.html
+* https://blog.khs1994.com/linux/ssl/https/README.html
 
 * https://github.com/khs1994-docker/lnmp/issues/137
+* https://github.com/khs1994-docker/lnmp/issues/895
 
 | Verson     | Details     |
 | :------------- | :------------- |
-| [![](https://images.microbadger.com/badges/version/khs1994/nginx:1.15.8-alpine.svg)](https://microbadger.com/images/khs1994/nginx:1.15.8-alpine "Get your own version badge on microbadger.com") | [![](https://images.microbadger.com/badges/image/khs1994/nginx:1.15.8-alpine.svg)](https://microbadger.com/images/khs1994/nginx:1.15.8-alpine "Get your own image badge on microbadger.com") |
-| [![](https://images.microbadger.com/badges/version/khs1994/nginx:1.15.8-stretch.svg)](https://microbadger.com/images/khs1994/nginx:1.15.8-stretch "Get your own version badge on microbadger.com") | [![](https://images.microbadger.com/badges/image/khs1994/nginx:1.15.8-stretch.svg)](https://microbadger.com/images/khs1994/nginx:1.15.8-stretch "Get your own image badge on microbadger.com") |
+| [![](https://images.microbadger.com/badges/version/khs1994/nginx:1.19.0-alpine.svg)](https://microbadger.com/images/khs1994/nginx:1.19.0-alpine "Get your own version badge on microbadger.com") | [![](https://images.microbadger.com/badges/image/khs1994/nginx:1.19.0-alpine.svg)](https://microbadger.com/images/khs1994/nginx:1.19.0-alpine "Get your own image badge on microbadger.com") |
+| [![](https://images.microbadger.com/badges/version/khs1994/nginx:1.19.0-buster.svg)](https://microbadger.com/images/khs1994/nginx:1.19.0-buster "Get your own version badge on microbadger.com") | [![](https://images.microbadger.com/badges/image/khs1994/nginx:1.19.0-buster.svg)](https://microbadger.com/images/khs1994/nginx:1.19.0-buster "Get your own image badge on microbadger.com") |
+
+## 测试浏览器是否支持 HTTP3
+
+* https://quic.tech:8443
+
+**chrome 83+**
+
+```bash
+--enable-quic --quic-version=h3-27 --origin-to-force-quic-on=example.com:443
+```
+
+**firefox 75+**
+
+`about:config` -> `network.http.http3.enabled = true`
+
+## 草案
+
+* https://datatracker.ietf.org/doc/draft-ietf-quic-transport/history/
 
 ## `Docker Compose`
 
 ```yaml
 version: "3"
-services:
 
+services:
   nginx:
-    image: "khs1994/nginx:1.15.8-alpine"
+    image: "khs1994/nginx:1.19.0-alpine"
     ports:
       - "80:80"
-      - "443:443"
+      - "443:443/tcp"
+      - "443:443/udp"
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - ./app:/app:rw
       - ./conf.d:/etc/nginx/conf.d:ro
 ```
 
@@ -34,11 +53,12 @@ services:
 ```bash
 $ docker run -dit \
          -e TZ=Asia/Shanghai \
-         -p 80:80 \
-         -p 443:443 \
+         -p 80:80/tcp \
+         -p 443:443/tcp \
+         -p 443:443/udp \
          -v $PWD/app:/app \
          -v $PWD/conf.d:/etc/nginx/conf.d \
-         khs1994/nginx:1.15.8-alpine
+         khs1994/nginx:1.19.0-alpine
 ```
 
 # Who use it?
@@ -48,7 +68,7 @@ $ docker run -dit \
 # Compare
 
 ```bash
-$ docker-compose up alpine | stretch | official
+$ docker-compose up alpine | buster | official
 
 $ h2load -n 100 -c 10 https://t.khs1994.com
 ```
@@ -67,7 +87,7 @@ time to 1st byte:    92.99ms    460.74ms    233.89ms    120.97ms    70.00%
 req/s           :      12.99       17.08       14.62        1.41    70.00%
 ```
 
-## stretch
+## buster
 
 ```bash
 finished in 954.81ms, 104.73 req/s, 17.93KB/s
@@ -78,7 +98,7 @@ traffic: 17.12KB (17532) total, 1.70KB (1742) headers (space savings 90.10%), 13
 time for request:    10.71ms    103.80ms     71.21ms     17.92ms    74.00%
 time for connect:   118.40ms    307.03ms    178.26ms     61.53ms    80.00%
 time to 1st byte:   163.51ms    396.44ms    232.83ms     73.78ms    80.00%
-req/s           :      10.59       12.09       11.25        0.57    60.00%
+req/s           :      10.59       12.09       11.35        0.57    60.00%
 ```
 
 ## official
@@ -98,9 +118,10 @@ req/s           :      14.26       16.78       15.52        0.96    50.00%
 # More Infortion
 
 * [khs1994-docker/lnmp](https://github.com/khs1994-docker/lnmp)
-
 * [Official NGINX Dockerfiles](https://github.com/nginxinc/docker-nginx)
-
-* https://github.com/sanqi/nginx-tls1.3
-
 * https://github.com/hakasenyang/openssl-patch
+* https://www.nginx.com/blog/introducing-technology-preview-nginx-support-for-quic-http-3/
+* https://quic.nginx.org/README
+* https://asnokaze.hatenablog.com/entry/2020/06/11/133357
+* https://www.grottedubarbu.fr/nginx-quic-http3/
+* https://jiyiren.github.io/2020/06/17/quic-explain-build/
